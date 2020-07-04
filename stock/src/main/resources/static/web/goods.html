@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>goods</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<script src="../js/format.js"></script>
+	<script src="../js/jquery-getUrlParam.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/goods-favorite.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<span class="article-title">
+			<a href="index.html">首頁</a> 
+			> 
+			<a href="product.html">商品</a> 
+			> 
+			<a href="product.html">台股</a> 
+			> 
+			<a href="#" onclick="return false" id="title-stock">個股</a>
+		</span>
+		<div class="goods-favorite">
+			<div class="goods-taiwan-favorite">
+				<h1>台股</h1>
+			</div>
+			<div class="list-goods-favorite">
+				<form id="form-order">
+					<table>
+						<tbody id="goods-list">
+							<tr>
+								<th>產業類別</th><td id="goods-name" colspan="3"></td>
+							</tr>
+							<tr>
+								<th>股票代號</th><td id="goods-code"></td>
+								<th>公司名稱</th><td id="goods-stock"></td>
+							</tr>
+							<tr>
+								<th>股價</th><td id="goods-price"></td>
+								<th>成交量</th><td id="goods-volume"></td>
+							</tr>
+							<tr>
+								<th>主要經營業務</th><td id="goods-main-business" colspan="3"></td>
+							</tr>
+							<tr>
+								<th>買賣</th>
+								<td colspan="3">
+									<label>
+										<input id="buy" type="radio" name="buy_sell" value="0" checked="checked">買
+									</label>
+									<label>
+										<input id="sell" type="radio" name="buy_sell" value="1">賣
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th>數量(張)</th>
+								<td colspan="3">
+									<input id="count" name="count" type="number" min="0" onkeyup="numFormat(this.value, this.id)">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+			<input id="btn-favorite-add" type="button" value="收藏">
+			<input id="btn-order" type="button" value="下單">
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		// 當前頁面處理的id
+		var id;
+		
+		$(document).ready(function(){
+			id = $.getUrlParam("id");
+			showGoodsDetailed();
+			checkFavorite()
+			
+			$("#count").keydown(function(event){
+				if(event.which == 13) {
+				event.preventDefault();
+				return false;
+				}
+			});
+		})
+		
+		// 顯示商品詳情
+		function showGoodsDetailed(){
+			var url = "../goods/details/" + id;
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					var goods = json.data;
+					if(goods == null){
+						location.href= "product.html";
+						return;
+					}
+					$("#title-stock").html(goods.stock);
+					$("title").html(goods.stock);
+					
+					$("#goods-name").html(goods.name);
+					$("#goods-code").html(goods.code);
+					$("#goods-stock").html(goods.stock);
+					$("#goods-price").html(goods.price);
+					$("#goods-volume").html(goods.volume);
+					$("#goods-main-business").html(goods.mainBusiness);
+				}
+			})
+		}
+		
+		// 檢查是否有收藏
+		function checkFavorite(){
+			var url = "../favorite/exists/" + id;
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.data != null){
+						$("#btn-favorite-add").attr("value", "取消收藏");
+					}
+				}
+			})
+		}
+		
+		// 處理添加或刪除到收藏
+		$("#btn-favorite-add").click(function(){
+			var url = "../favorite/add"
+			var gid = id;
+			var price = $("#goods-price").html();
+			var volume = $("#goods-volume").html();
+			var data = "gid=" + gid + "&price=" + price + "&volume=" + volume;
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("成功");
+						location.href = "favorite.html";
+					}else{
+						alert("失敗!" + json.message);
+					}
+				},
+				"error": function(){
+					alert("未登入帳號!請先登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+		
+		// 處理下單
+		$("#btn-order").click(function(){
+			var url = "../order/create";
+			var data = $("#form-order").serialize() + "&goods_id=" + id;
+			console.log(data);
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						var id = json.data.id;
+						location.href = "order.html?id=" + id;
+					}else{
+						alert("下單失敗!" + json.message);
+					}
+				},
+				"error": function(xhr, text, errorThrown){
+					alert("未登入帳號!請先登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+	</script>
+</body>
+</html>

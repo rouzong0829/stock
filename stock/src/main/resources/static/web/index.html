@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>首頁</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/index.css">
+	<!-- Place somewhere in the <head> of your document -->
+	<link rel="stylesheet" href="../bootstrap/flexslider.css" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<script src="../bootstrap/jquery.flexslider.js"></script>
+	<!-- Place in the <head>, after the three links -->
+	<script type="text/javascript" charset="utf-8">
+	  $(window).load(function() {
+	    $('.flexslider').flexslider();
+	  });
+	</script>
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		<a id="top"></a>
+		<div class="head-div">
+			<a href="index.html">
+				<img src="../images/logo1.png" width="100px">
+			</a>
+			<span class="head-title">臺灣證劵交易所</span>
+			<div class="head-list">
+				<ul>
+					<li class="logout-title"><a href="register.html">註冊</a></li>
+					<li class="logout-title">|</li>
+					<li class="logout-title"><a href="login.html">登入</a></li>
+					<li class="login-title"><a href="upload.html" class="avatar-size"><img id="img-avatar" src="../images/user.jpg" ></a></li>
+					<li class="login-title"><a href="password.html" id="title-username" title="修改資料">#{username}</a></li>
+					<li class="login-title">|</li>
+					<li class="login-title"><a id="logout" href="" onclick="logout()">登出</a></li>
+				</ul>
+			</div>
+			<div class="menu">
+				<ul>
+					<li><a href="index.html">首頁</a></li>
+					<li>|</li>
+					<li><a href="product.html">商品</a></li>
+					<li>|</li>
+					<li><a href="favorite.html">我的收藏</a></li>
+					<li>|</li>
+					<li><a href="orderList.html">我的訂單</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<!-- 輪播圖 -->
+		<div>
+			<!-- Place somewhere in the <body> of your page -->
+			<div class="flexslider">
+			  <ul class="slides">
+			    <li>
+			      <img src="../images/bg2.jpg" />
+			    </li>
+			    <li>
+			      <img src="../images/bg3.jpg" />
+			    </li>
+			    <li>
+			      <img src="../images/bg4.jpg" />
+			    </li>
+			  </ul>
+			</div>
+		</div>
+		<!-- 商品 -->
+		<div class="index-goods">
+			<div class="div-title">
+				<h1>台股</h1>
+			</div>
+			<div class="list-goods">
+				<table>
+					<thead>
+						<tr>
+							<td>產業類別</td>
+							<td>代號</td>
+							<td>股票</td>
+							<td>股價</td>
+							<td>成交量</td>
+						</tr>
+					</thead>
+					<tbody id="list">
+						<tr>
+							<td><a href="goods.html">其他電子業</a></td>
+							<td><a href="goods.html">2317</a></td>
+							<td><a href="goods.html">鴻海</a></td>
+							<td><a href="goods.html">82.22</a></td>
+							<td><a href="goods.html">47061</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<a class="a-more" href="product.html">>>更多</a>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			showStockList();
+		})
+		
+		// 顯示商品列表
+		function showStockList(){
+			var url = "../goods/volume/1";
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					$("#list").empty();
+					var list = json.data;
+					for(var i = 0; i < list.length; i++){
+						var html = '<tr style="background-color:#{tr-color}">'
+							+'<td><a href="goods.html?id=#{id}">#{name}</a></td>'
+							+'<td><a href="goods.html?id=#{id}">#{code}</a></td>'
+							+'<td><a href="goods.html?id=#{id}">#{stock}</a></td>'
+							+'<td><a href="goods.html?id=#{id}">#{price}</a></td>'
+							+'<td><a href="goods.html?id=#{id}">#{volume}</a></td>'
+							+'</tr>';
+							
+						if(i % 2 == 0){
+							html = html.replace(/#{tr-color}/g, "#FFFFFF")
+						}else{
+							html = html.replace(/#{tr-color}/g, "#ADBBF2")
+						}
+						
+						html = html.replace(/#{id}/g, list[i].id);
+						html = html.replace(/#{name}/g, list[i].name);
+						html = html.replace(/#{code}/g, list[i].code);
+						html = html.replace(/#{stock}/g, list[i].stock);
+						html = html.replace(/#{price}/g, list[i].price);
+						html = html.replace(/#{volume}/g, list[i].volume);
+						
+						$("#list").append(html);
+					}
+				}
+			})
+		}
+	</script>
+</body>
+</html>

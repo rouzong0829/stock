@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="tw.tedu.stock.mapper.GoodsMapper">
+	
+	<!-- 根據量查詢商品數據列表 -->
+	<!-- List<IndexGoodsVO> findByVolume(@Param("count")Integer count, @Param("desc")Integer desc) -->
+	<select id="findByVolume" resultType="tw.tedu.stock.vo.IndexGoodsVO">
+		SELECT
+			t_goods.id, name, code, stock, price, volume
+		FROM
+			t_goods
+		INNER JOIN
+			t_goods_category
+		ON
+			t_goods.category_id = t_goods_category.id
+		WHERE
+			t_goods.status=0
+		ORDER BY
+			volume
+			<if test="desc == 1">
+				DESC
+			</if>
+		LIMIT
+			0, #{count}
+	</select>
+	
+	<!-- 根據股票代號查詢商品數據列表 -->
+	<!-- List<IndexGoodsVO> findByCode(Integer desc) -->
+	<select id="findByCode" resultType="tw.tedu.stock.vo.IndexGoodsVO">
+		SELECT
+			t_goods.id, name, code, stock, price, volume
+		FROM
+			t_goods
+		INNER JOIN
+			t_goods_category
+		ON
+			t_goods.category_id = t_goods_category.id
+		WHERE
+			t_goods.status=0
+		ORDER BY
+			code
+			<if test="desc == 1">
+				DESC
+			</if>
+	</select>
+	
+	<!-- 根據id查詢商品詳情 -->
+	<!-- IndexGoodsVO findById(Integer id) -->
+	<select id="findById" resultType="tw.tedu.stock.vo.IndexGoodsVO">
+		SELECT
+			t_goods.id, name, code, stock, price, volume,
+			main_business mainBusiness
+		FROM
+			t_goods
+		INNER JOIN
+			t_goods_category
+		ON
+			t_goods.category_id = t_goods_category.id
+		WHERE
+			t_goods.status=0 AND t_goods.id=#{id}
+	</select>
+	
+</mapper>

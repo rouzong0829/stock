@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>註冊</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<div class="reg-div">
+			<h4>新用戶註冊</h4>
+			<hr>
+			<!-- 表單開始 -->
+			<form id="form-reg">
+				<!-- 用戶名 -->
+				<div class="username">
+					<label>用戶名:</label>
+					<div>
+						<input class="font-control" name="username" placeholder="請輸入用戶名"><br>
+					</div>
+				</div>
+				<!-- 密碼 -->
+				<div class="password">
+					<label>密碼:</label>
+					<div>
+						<input class="font-control" name="password" type="password" placeholder="請輸入密碼"><br>
+					</div>
+				</div>
+				<!-- 提交按鈕 -->
+				<div>
+					<input id="btn-reg" type="button" value="註冊">
+					<span id="reg-login">已經有帳號<a href="login.html">登入</a></span>
+				</div>
+			</form>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		<div>
+			地址：XXXXX XX市XX路X段X號X樓　電話︰(XX)XXXX-XXXX
+		</div>
+		<div>
+			<ul class="foot-ul">
+				<li><a href="#">聯絡我們</a></li>
+				<li>|</li>
+				<li><a href="#">訂閱電子報</a></li>
+				<li>|</li>
+				<li><a href="#">網站地圖</a></li>
+				<li>|</li>
+				<li><a href="#">使用條款</a></li>
+				<li>|</li>
+				<li><a href="#">隱私權保護說明</a></li>
+				<li>|</li>
+				<li><a href="#">個人資料管理政策聲明</a></li>
+				<li>|</li>
+				<li><a href="#">資訊安全政策</a></li>
+			</ul>
+		</div>
+		<div>
+			※ 本站建議最佳瀏覽條件：螢幕解析度 1920x1080 以上，瀏覽器為 Google Chrome。
+		</div>
+		<div class="logo">Logo通過<a href="https://www.designevo.com/tw/logo-maker/" title="免費線上logo製作軟體">DesignEvo</a>設計製作</div>
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		// 為註冊按鈕綁定單擊事件
+		$("#btn-reg").click(function(){
+			// 請求提交位置
+			var url = "../user/reg";
+			// 請求參數
+			var data = $("#form-reg").serialize();
+			console.log("註冊參數:" + data);
+			// 發出ajax請求，並處理結果
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("註冊成功!")
+						location.href = "login.html";
+					}else{
+						alert(json.message);
+					}
+				}
+			})
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>確認訂單</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<script src="../js/jquery-getUrlParam.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/goods-favorite.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<span class="article-title">
+			<a href="index.html">首頁</a> 
+			> 
+			<a href="product.html">商品</a> 
+			> 
+			<a href="product.html">台股</a> 
+			> 
+			<a href="javascript:history.go(-1)" id="title-stock">個股</a> 
+			> 
+			<a href="#" onclick="return false">訂單</a>
+		</span>
+		<div class="goods-favorite">
+			<div class="goods-taiwan-favorite">
+				<h1>訂單</h1>
+			</div>
+			<div class="list-goods-favorite">
+				<table>
+					<tbody id="order-confirm">
+						<tr>
+							<th>姓名</th><td id="recv-name" colspan="3">空</td>
+						</tr>
+						<tr>
+							<th>下單時間</th><td id="order-time" colspan="3"></td>
+						</tr>
+						<tr>
+							<th>商品代號</th><td id="goods-code"></td>
+							<th>商品名稱</th><td id="goods-stock"></td>
+						</tr>
+						<tr>
+							<th>委託</th><td id="buy-sell" colspan="3"></td>
+						</tr>
+						<tr>
+							<th>價格</th><td id="goods-price"></td>
+							<th>數量(張)</th><td id="goods-count"></td>
+						</tr>
+						<tr>
+							<th>付款狀態</th><td id="status" colspan="3"></td>
+						</tr>
+						<tr>
+							<th>總價</th><td id="pay" colspan="3"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<input id="btn-cancel" type="button" value="取消">
+			<input id="btn-confirm-order" type="button" value="確認付款">
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		var id;
+		
+		$(document).ready(function(){
+			id = $.getUrlParam("id");
+			showOrderDetailed();
+		})
+		
+		// 顯示訂單詳情
+		function showOrderDetailed(){
+			var url = "../order/details/" + id;
+			console.log(url);
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					var data = json.data;
+					$("#title-stock").html(data.goodsStock);
+					
+					$("#recv-name").html(data.recvName);
+					// 格式化時間
+					var formattedDate = new Date(data.orderTime);
+					var date = formattedDate.toLocaleDateString();
+					var time = formattedDate.toLocaleTimeString();
+					$("#order-time").html(date + time);
+					
+					$("#goods-code").html(data.goodsCode);
+					$("#goods-stock").html(data.goodsStock);
+					// 0-買，1-賣
+					if(data.buySell == 0){
+						$("#buy-sell").html("買");
+					}else{
+						$("#buy-sell").html("賣");
+					}
+					$("#goods-price").html(data.goodsPrice);
+					$("#goods-count").html(data.goodsCount);
+					// 0-未付款，1-已付款，2-已取消
+					if(data.status == 0){
+						$("#status").html("未付款");
+					}else if(data.status == 1){
+						$("#status").html("已付款");
+					}else{
+						$("#status").html("已取消");
+					}
+					$("#pay").html(data.pay);
+				}
+			})
+		}
+		
+		// 為取消鍵綁定取消訂單
+		$("#btn-cancel").click(function(){
+			var url = "../order/status/" + id + "?status=2";
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("已取消!");
+						location.href = "orderList.html";
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr, text, errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+		
+		// 為確認鍵綁定確認訂單
+		$("#btn-confirm-order").click(function(){
+			var url = "../order/status/" + id + "?status=1";
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("已付款!");
+						location.href = "orderList.html";
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr, text, errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>收貨管理</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/modify.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<div class="article-left">
+			<ul>
+				<li><a href="password.html">修改密碼</a></li>
+				<li><a href="userdata.html">個人資料</a></li>
+				<li><a href="upload.html">上傳頭像</a></li>
+				<li><a href="address.html">收貨管理</a></li>
+			</ul>
+		</div>
+		<div class="article-right">
+			<h4>收貨管理</h4>
+			<hr>
+			<div>
+				<table id="address-table">
+					<caption>地址列表</caption>
+					<thead>
+						<tr>
+							<th>地址類型</th>
+							<th>姓名</th>
+							<th class="address-detailed">詳細地址</th>
+							<th>手機號碼</th>
+							<th colspan="2">操作</th>
+						</tr>
+					</thead>
+					<tbody id="list">
+						<tr>
+							<td>空</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<a href="addAddress.html" class="add-a">新增地址</a>
+			</div>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			// 加載當前用戶地址列表
+			showList();
+		})
+		
+		function showList(){
+			var url = "../address/list";
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					
+					// 若有數據則清空並導入
+					if(json.data != ""){
+						$("#list").empty();
+					}
+					
+					var list = json.data;
+					for(var i = 0; i < list.length; i++){
+						var html = '<tr>'
+							+'<td>#{tag}</td>'
+							+'<td>#{name}</td>'
+							+'<td>#{address}</td>'
+							+'<td>#{phone}</td>'
+							+'<td #{colspan}><a href="javascript:deleteById(#{id});" class="add-a">刪除</a></td>'
+							+'<td #{colspan2}><a #{is_default} href="javascript:setDefault(#{id});" class="add-a">設為默認</a></td>'
+							+'</tr>';
+							
+						if(i == 0){
+							html = html.replace(/#{colspan}/g, 'colspan="2"');
+							html = html.replace(/#{colspan2}/g, 'style="display: none;"');
+						}else{
+							html = html.replace(/#{colspan}/g, '');
+							html = html.replace(/#{colspan2}/g, '');
+						}
+							
+						html = html.replace(/#{id}/g, list[i].id);
+						html = html.replace("#{tag}", list[i].tag);
+						html = html.replace("#{name}", list[i].name);
+						html = html.replace("#{address}", list[i].address);
+						html = html.replace("#{phone}", list[i].phone);
+						if(list[i].isDefault == 1){
+							html = html.replace("#{is_default}", 'style="display: none;"');
+						}else{
+							html = html.replace("#{is_default}", '');
+						}
+						
+						$("#list").append(html);
+					}
+				}
+			})
+		}
+		// 為刪除數據綁定按鍵
+		function deleteById(id){
+			var url = "../address/delete/" + id;
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						location.reload(true);
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr,text,errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		}
+		
+		// 為設置默認綁定按鍵
+		function setDefault(id){
+			var url = "../address/default/" + id;
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						showList();
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr,text,errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		}
+	</script>
+</body>
+</html>

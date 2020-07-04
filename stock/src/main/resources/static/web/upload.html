@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>修改頭像</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../bootstrap/jquery.cookie.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/modify.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<div class="article-left">
+			<ul>
+				<li><a href="password.html">修改密碼</a></li>
+				<li><a href="userdata.html">個人資料</a></li>
+				<li><a href="upload.html">上傳頭像</a></li>
+				<li><a href="address.html">收貨管理</a></li>
+			</ul>
+		</div>
+		<div class="article-right">
+			<h4>修改頭像</h4>
+			<hr>
+			<form id="form-upload">
+				<div>
+					<img id="img-avatar" src="../images/user.jpg"><br>
+				</div>
+				<input id="input-file" type="file" name="file" multiple="multiple"><br>
+				<input id="btn-upload" type="button" value="修改">
+			</form>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			if($.cookie("avatar") != null){
+				$("#img-avatar").attr("src", $.cookie("avatar"));
+			}
+		})
+		
+		$("#btn-upload").click(function(){
+			var url = "../user/upload";
+			var data = new FormData($("#form-upload")[0]);
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"contentType": false,
+				"processData": false,
+				"success": function(json){
+					if(json.state == 200){
+						alert("修改頭像成功!");
+						$("#img-avatar").attr("src", json.data);
+						// 將頭像路徑存到Cookie
+						$.cookie("avatar", json.data, {
+							expires: 7
+						})
+						location.reload(true);
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(){
+					alert("您的登入時間已超時!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+	</script>
+</body>
+</html>

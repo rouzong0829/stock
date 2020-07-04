@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>我的訂單</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<script src="../js/jquery-getUrlParam.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/goods-favorite.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<span class="article-title">
+			<a href="index.html">首頁</a> 
+			> 
+			<a href="orderList.html">我的訂單</a>
+		</span>
+		<div class="goods-favorite">
+			<div class="goods-taiwan-favorite">
+				<h1>我的訂單</h1>
+			</div>
+			<div class="list-goods-favorite">
+				<table>
+					<thead>
+						<tr>
+							<th>姓名</th><td id="recv-name" colspan="14">空</td>
+						</tr>
+						<tr>
+							<th>商品代號</th>
+							<th>商品名稱</th>
+							<th>委託</th>
+							<th>價格</th>
+							<th>數量(張)</th>
+							<th>總價</th>
+							<th>付款狀態</th>
+							<th>下單時間</th>
+						</tr>
+					</thead>
+					<tbody id="order-list">
+						<tr>
+							<td>空</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			showOrderList();
+			getUsername();
+		})
+		
+		// 顯示訂單列表
+		function showOrderList(){
+			var url = "../order/list";
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					// 若有數據則清空並導入
+					if(json.data != ""){
+						$("#order-list").empty();
+					}
+					
+					var formattedDate;
+					var date;
+					var time;
+					
+					var list = json.data;
+					for(var i = 0; i < list.length; i++){
+						var html = '<tr style="background-color:#{tr-color}">'
+							+'<td>#{goods-code}</td>'
+							+'<td>#{goods-stock}</td>'
+							+'<td style="background-color:#{buy-sell-color}">#{buy-sell}</td>'
+							+'<td>#{goods-price}</td>'
+							+'<td>#{goods-count}</td>'
+							+'<td>#{pay}</td>'
+							+'<td>#{status}</td>'
+							+'<td>#{order-time}</td>'
+							+'</tr>';
+							
+						if(i % 2 == 0){
+							html = html.replace(/#{tr-color}/g, "#FFFFFF")
+						}else{	
+							html = html.replace(/#{tr-color}/g, "#ADBBF2")
+						}
+						
+						html = html.replace(/#{goods-code}/g, list[i].goodsCode);
+						html = html.replace(/#{goods-stock}/g, list[i].goodsStock);
+						
+						// 0-買，1-賣
+						if(list[i].buySell == 0){
+							html = html.replace(/#{buy-sell}/g, "買");
+							html = html.replace(/#{buy-sell-color}/g, "#FF8D8D");
+						}else{
+							html = html.replace(/#{buy-sell}/g, "賣");
+							html = html.replace(/#{buy-sell-color}/g, "#40FF40");
+						}
+						
+						html = html.replace(/#{goods-price}/g, list[i].goodsPrice);
+						html = html.replace(/#{goods-count}/g, list[i].goodsCount);
+						html = html.replace(/#{pay}/g, list[i].pay);
+						
+						// 0-未付款，1-已付款，2-已取消
+						if(list[i].status == 0){
+							html = html.replace(/#{status}/g, "未付款");
+						}else if(list[i].status == 1){
+							html = html.replace(/#{status}/g, "已付款");
+						}else{
+							html = html.replace(/#{status}/g, "已取消");
+						}
+						
+						// 格式化時間
+						formattedDate = new Date(list[i].orderTime);
+						date = formattedDate.toLocaleDateString();
+						time = formattedDate.toLocaleTimeString();
+						html = html.replace(/#{order-time}/g, date + time);
+						
+						$("#order-list").append(html);
+					}
+				}
+			})
+		}
+		
+		function getUsername(){
+			url = "../user/info";
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					$("#recv-name").html(json.data.username);
+				}
+			})
+		}
+	</script>
+</body>
+</html>

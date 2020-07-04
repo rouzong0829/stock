@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="tw.tedu.stock.mapper.FavoriteMapper">
+	
+	<!-- 增加收藏數據 -->
+	<!-- Integer addnew(Favorite favorite) -->
+	<insert id="addnew" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO t_favorite(
+			uid, gid, price, volume,
+			created_user, created_time,
+			modified_user, modified_time
+		)VALUES(
+			#{uid}, #{gid}, #{price}, #{volume},
+			#{createdUser}, #{createdTime},
+			#{modifiedUser}, #{modifiedTime}
+		)
+	</insert>
+	
+	<!-- 根據用戶id與商品id刪除收藏數據 -->
+	<!-- Integer deleteByUidAndGid(@Param("uid")Integer uid, @Param("gid")Integer gid) -->
+	<delete id="deleteByUidAndGid">
+		DELETE FROM
+			t_favorite
+		WHERE
+			uid=#{uid} AND gid=#{gid}
+	</delete>
+	
+	<!-- 根據用戶id與收藏id刪除收藏數據 -->
+	<!-- Integer deleteByUidAndId(@Param("uid")Integer uid, @Param("id")Integer id) -->
+	<delete id="deleteByUidAndId">
+		DELETE FROM
+			t_favorite
+		WHERE
+			uid=#{uid} AND id=#{id}
+	</delete>
+	
+	<!-- 根據用戶id與商品id查詢收藏數據 -->
+	<!-- Favorite findByUidAndGid(@Param("uid")Integer uid, @Param("gid")Integer gid) -->
+	<select id="findByUidAndGid" resultType="tw.tedu.stock.entity.Favorite">
+		SELECT
+			id
+		FROM
+			t_favorite
+		WHERE
+			uid=#{uid} AND gid=#{gid}
+	</select>
+	
+	<!-- 根據用戶id與收藏id查詢收藏數據 -->
+	<!-- Favorite findByUidAndId(@Param("uid")Integer uid, @Param("id")Integer id) -->
+	<select id="findByUidAndId" resultType="tw.tedu.stock.entity.Favorite">
+		SELECT
+			id, uid
+		FROM
+			t_favorite
+		WHERE
+			uid=#{uid} AND id=#{id}
+	</select>
+	
+	<!-- 根據用戶id查詢該用戶的收藏列表 -->
+	<!-- List<FavoriteVO> findByUid(Integer uid) -->
+	<select id="findByUid" resultType="tw.tedu.stock.vo.FavoriteVO">
+		SELECT
+			t_favorite.id,
+			uid, gid,
+			t_goods_category.name,
+			t_goods.code, t_goods.stock,
+			t_favorite.price oldPrice,
+			t_goods.price newPrice,
+			t_favorite.volume oldVolume,
+			t_goods.volume newVolume
+		FROM
+			t_favorite, t_goods, t_goods_category
+		WHERE
+			uid=#{uid}
+		AND
+			t_favorite.gid = t_goods.id
+		AND
+			t_goods.category_id = t_goods_category.id
+		ORDER BY
+			t_favorite.id
+	</select>
+	
+</mapper>

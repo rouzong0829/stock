@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>修改資料</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/modify.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<div class="article-left">
+			<ul>
+				<li><a href="password.html">修改密碼</a></li>
+				<li><a href="userdata.html">個人資料</a></li>
+				<li><a href="upload.html">上傳頭像</a></li>
+				<li><a href="address.html">收貨管理</a></li>
+			</ul>
+		</div>
+		<div class="article-right">
+			<h4>修改資料</h4>
+			<hr>
+			<form id=form-change-info>
+				<label>用戶名:</label>
+				<input type="text" id="username" name="username" readonly="readonly"><br>
+				<label>手機號碼:</label>
+				<input type="text" id="phone" name="phone" placeholder="請輸入手機號碼10碼，如:0912-345678" maxlength="11"><br>
+				<label>電子信箱:</label>
+				<input type="text" id="email" name="email" placeholder="請輸入電子信箱，如:123@gmail.com" maxlength="50"><br>
+				<label>
+					<input id="gender-male" type="radio" name="gender" value="1" checked="checked">男
+				</label>
+				<label>
+					<input id="gender-female" type="radio" name="gender" value="0">女
+				</label><br>
+				<input id="btn-change" type="button" value="修改">
+			</form>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var url = "../user/info";
+			// 發送ajax請求
+			$.ajax({
+				"url": url,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					var user = json.data;
+					$("#username").val(user.username);
+					$("#phone").val(user.phone);
+					$("#email").val(user.email);
+					if(user.gender == 0){
+						$("#gender-female").attr("checked","checked");
+					}
+					if(user.gender == 1){
+						$("#gender-male").attr("checked","checked");
+					}
+				}
+			})
+		})
+		
+		// 為修改按鈕綁訂單擊事件
+		$("#btn-change").click(function(){
+			var url = "../user/change_info";
+			var data = $("#form-change-info").serialize();
+			console.log("修改個人資料參數:" + data);
+			// 發送ajax請求
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("修改成功!");
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr, text, errorThrown){
+					alert("您的登入時間已超時!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+	</script>
+</body>
+</html>

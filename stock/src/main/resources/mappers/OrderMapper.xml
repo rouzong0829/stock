@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="tw.tedu.stock.mapper.OrderMapper">
+	
+	<!-- 插入訂單數據 -->
+	<!-- Integer insertOrder(Order order) -->
+	<insert id="insertOrder" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO t_order(
+			uid,
+			recv_name, recv_address,
+			pay, buy_sell,
+			order_time, status,
+			created_user, created_time,
+			modified_user, modified_time
+		)VALUES(
+			#{uid},
+			#{recvName}, #{recvAddress},
+			#{pay}, #{buySell},
+			#{orderTime}, #{status},
+			#{createdUser}, #{createdTime},
+			#{modifiedUser}, #{modifiedTime}
+		)
+	</insert>
+	
+	<!-- 插入訂單商品數據 -->
+	<!-- Integer insertOrderItem(OrderItem orderItem) -->
+	<insert id="insertOrderItem" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO t_order_item(
+			oid, goods_id,
+			goods_code, goods_stock,
+			goods_count, goods_price,
+			created_user, created_time,
+			modified_user, modified_time
+		)VALUES(
+			#{oid}, #{goodsId},
+			#{goodsCode}, #{goodsStock},
+			#{goodsCount}, #{goodsPrice,},
+			#{createdUser}, #{createdTime},
+			#{modifiedUser}, #{modifiedTime}
+		)
+	</insert>
+	
+	<!-- 根據訂單id修改訂單狀態 -->
+	<!-- Integer updateStatus(@Param("id")Integer id, @Param("status")Integer status) -->
+	<update id="updateStatus">
+		UPDATE
+			t_order
+		SET
+			status=#{status}
+		WHERE
+			id=#{id}
+	</update>
+	
+	<!-- 根據訂單id查詢數據 -->
+	<!-- OrderVO findById(Integer id) -->
+	<select id="findById" resultType="tw.tedu.stock.vo.OrderVO">
+		SELECT
+			t_order.id, uid,
+			recv_name recvName, pay,
+			buy_sell buySell,
+			order_time orderTime, status,
+			oid, goods_id goodsId, goods_code goodsCode,
+			goods_stock goodsStock, goods_count goodsCount,
+			goods_price goodsPrice
+		FROM
+			t_order
+		INNER JOIN
+			t_order_item
+		ON
+			t_order.id = t_order_item.oid
+		WHERE
+			t_order.id = #{id}
+	</select>
+	
+	<!-- 根據用戶id查詢訂單數據列表 -->
+	<!-- List<OrderVO> findByUid(Integer uid) -->
+	<select id="findByUid" resultType="tw.tedu.stock.vo.OrderVO">
+		SELECT
+			t_order.id, uid,
+			recv_name recvName, pay,
+			buy_sell buySell,
+			order_time orderTime, status,
+			oid, goods_id goodsId, goods_code goodsCode,
+			goods_stock goodsStock, goods_count goodsCount,
+			goods_price goodsPrice
+		FROM
+			t_order
+		INNER JOIN
+			t_order_item
+		ON
+			t_order.id = t_order_item.oid
+		WHERE
+			uid = #{uid}
+		ORDER BY
+			t_order.id DESC
+	</select>
+	
+</mapper>

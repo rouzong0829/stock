@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>商品</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/product.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<span class="article-title">
+			<a href="index.html">首頁</a> 
+			> 
+			<a href="product.html">商品</a> 
+			> 
+			<a href="product.html">台股</a>
+		</span>
+		<div class="product-stock">
+			<div class="product-taiwan-stock">
+				<h1>台股</h1>
+			</div>
+			<div class="list-goods">
+				<table>
+					<thead>
+						<tr>
+							<th>產業類別</th>
+							<th>代號</th>
+							<th>股票</th>
+							<th>股價</th>
+							<th>成交量</th>
+						</tr>
+					</thead>
+					<tbody id="product-list">
+						<tr>
+							<td><a href="goods.html">其他電子業</a></td>
+							<td><a href="goods.html">2317</a></td>
+							<td><a href="goods.html">鴻海</a></td>
+							<td><a href="goods.html">82.22</a></td>
+							<td><a href="goods.html">47061</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+	$(document).ready(function(){
+		showStockList();
+	})
+	
+	// 顯示商品列表
+	function showStockList(){
+		var url = "../goods/code/0";
+		$.ajax({
+			"url": url,
+			"type": "GET",
+			"dataType": "json",
+			"success": function(json){
+				$("#product-list").empty();
+				var list = json.data;
+				for(var i = 0; i < list.length; i++){
+					var html = '<tr style="background-color:#{tr-color}">'
+						+'<td><a href="goods.html?id=#{id}">#{name}</a></td>'
+						+'<td><a href="goods.html?id=#{id}">#{code}</a></td>'
+						+'<td><a href="goods.html?id=#{id}">#{stock}</a></td>'
+						+'<td><a href="goods.html?id=#{id}">#{price}</a></td>'
+						+'<td><a href="goods.html?id=#{id}">#{volume}</a></td>'
+						+'</tr>';
+						
+					if(i % 2 == 0){
+						html = html.replace(/#{tr-color}/g, "#FFFFFF")
+					}else{	
+						html = html.replace(/#{tr-color}/g, "#ADBBF2")
+					}
+					
+					html = html.replace(/#{id}/g, list[i].id);
+					html = html.replace(/#{name}/g, list[i].name);
+					html = html.replace(/#{code}/g, list[i].code);
+					html = html.replace(/#{stock}/g, list[i].stock);
+					html = html.replace(/#{price}/g, list[i].price);
+					html = html.replace(/#{volume}/g, list[i].volume);
+					
+					$("#product-list").append(html);
+				}
+			}
+		})
+	}
+	</script>
+</body>
+</html>

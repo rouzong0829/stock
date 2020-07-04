@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>我的收藏</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/goods-favorite.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<span class="article-title">
+			<a href="index.html">首頁</a> 
+			> 
+			<a href="favorite.html">我的收藏</a>
+		</span>
+		<div class="goods-favorite">
+			<div class="goods-taiwan-favorite">
+				<h1>收藏</h1>
+			</div>
+			<div class="list-goods-favorite">
+				<table>
+					<thead>
+						<tr>
+							<th>產業類別</th>
+							<th>代號</th>
+							<th>股票</th>
+							<th>股價</th>
+							<th>成交量</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody id="favorite-list">
+						<tr>
+							<td><a>空</a></td>
+							<td><a></a></td>
+							<td><a></a></td>
+							<td><a></a></td>
+							<td><a></a></td>
+							<td><a></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			showFavoriteList();
+		})
+		
+		// 顯示收藏列表
+		function showFavoriteList(){
+			var url = "../favorite/list";
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					
+					// 若有數據則清空並導入
+					if(json.data != ""){
+						$("#favorite-list").empty();
+					}
+					
+					var list = json.data;
+					for(var i = 0; i < list.length; i++){
+						var html = '<tr style="background-color:#{tr-color}">'
+							+'<td><a href="goods.html?id=#{gid}">#{name}</a></td>'
+							+'<td><a href="goods.html?id=#{gid}">#{code}</a></td>'
+							+'<td><a href="goods.html?id=#{gid}">#{stock}</a></td>'
+							+'<td><a href="goods.html?id=#{gid}">#{price}</a></td>'
+							+'<td><a href="goods.html?id=#{gid}">#{volume}</a></td>'
+							+'<td><a href="javascript:deleteById(#{id});">-刪除-</a></td>'
+							+'</tr>';
+							
+						if(i % 2 == 0){
+							html = html.replace(/#{tr-color}/g, "#FFFFFF")
+						}else{	
+							html = html.replace(/#{tr-color}/g, "#ADBBF2")
+						}
+						
+						html = html.replace(/#{gid}/g, list[i].gid);
+						html = html.replace(/#{name}/g, list[i].name);
+						html = html.replace(/#{code}/g, list[i].code);
+						html = html.replace(/#{stock}/g, list[i].stock);
+						html = html.replace(/#{price}/g, list[i].newPrice);
+						html = html.replace(/#{volume}/g, list[i].newVolume);
+						html = html.replace(/#{id}/g, list[i].id);
+						
+						$("#favorite-list").append(html);
+					}
+				}
+			})
+		}
+		
+		// 為刪除數據綁定按鍵
+		function deleteById(id){
+			var url = "../favorite/delete/" + id;
+			$.ajax({
+				"url": url,
+				"type": "GET",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						location.reload(true);
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr,text,errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		}
+	</script>
+</body>
+</html>

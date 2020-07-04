@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增地址</title>
+	<script src="../bootstrap/jquery-1.9.1.min.js"></script>
+	<script src="../js/header.js"></script>
+	<script src="../js/footer.js"></script>
+	<script src="../js/format.js"></script>
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/footer.css">
+	<link rel="stylesheet" href="../css/modify.css">
+</head>
+<body>
+	<!-- header start -->
+	<header>
+		
+	</header>
+	<!-- header end -->
+	
+	<!-- article start -->
+	<article>
+		<div class="article-left">
+			<ul>
+				<li><a href="password.html">修改密碼</a></li>
+				<li><a href="userdata.html">個人資料</a></li>
+				<li><a href="upload.html">上傳頭像</a></li>
+				<li><a href="address.html">收貨管理</a></li>
+			</ul>
+		</div>
+		<div class="article-right">
+			<h4>新增地址</h4>
+			<hr>
+			<form id="form-address">
+				<label>姓名:</label>
+				<input name="name" class="address-control" placeholder="請輸入姓名" maxlength="20"><br>
+				<label>郵遞區號:</label>
+				<input name="zip" class="address-control" placeholder="請輸入郵遞區號5-6碼" maxlength="6"><br>
+				<label>詳細地址:</label>
+				<input name="address" class="address-control" placeholder="請輸入詳細地址" maxlength="50"><br>
+				<label>手機號碼:</label>
+				<input name="phone" class="address-control" placeholder="請輸入手機號碼10碼，如:0912-345678" maxlength="11"><br>
+				<label>家用電話:</label>
+				<input name="tel" class="address-control" placeholder="請輸入家用電話10碼，如:02-12345678" maxlength="11"><br>
+				<label>地址類型:</label>
+				<input name="tag" class="address-control" placeholder="請輸入地址類型，如:家、公司" maxlength="10"><br>
+				<input id="btn-submit" type="button" value="保存">
+				<input type="reset" value="清除">
+			</form>
+		</div>
+	</article>
+	<!-- article end -->
+	
+	<!-- footer start -->
+	<footer>
+		
+	</footer>
+	<!-- footer end -->
+	
+	<script type="text/javascript">
+		$("#btn-submit").click(function(){
+			var url = "../address/create";
+			var data = $("#form-address").serialize();
+			console.log("地址參數:" + data);
+			
+			// 發出ajax請求，並處理結果
+			$.ajax({
+				"url": url,
+				"data": data,
+				"type": "POST",
+				"dataType": "json",
+				"success": function(json){
+					if(json.state == 200){
+						alert("保存成功!");
+						location.href = "address.html";
+					}else{
+						alert(json.message);
+					}
+				},
+				"error": function(xhr,text,errorThrown){
+					alert("您登入的信息已經過期!請重新登入!");
+					location.href = "login.html";
+				}
+			})
+		})
+	</script>
+</body>
+</html>
